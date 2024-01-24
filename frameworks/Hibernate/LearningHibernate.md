@@ -17,10 +17,10 @@
 * Any type of application can be built using Hibernate Framework.
 
 ### Traditional way to save data (JDBC)
-![Jdbc usage](/img/JDBC_usage.png)
+![Jdbc usage](/frameworks/Hibernate/img/JDBC_usage.png)
 
 ### Modern way to save data using Hibernate
-![Hibernate usage](/img/Hibernate_usage.png)
+![Hibernate usage](/frameworks/Hibernate/img/Hibernate_usage.png)
 
 ### Hibernate Configuration for Eclipse
 - Add Hibernate dependency from the maven repository (if you are using maven).

@@ -19,13 +19,13 @@
 * Inversion Of Control(IOC):- Jab humlog object creation ka control apne haath se hataker spring ko dedete hai phir spring un dependencies ka object dynamically runtime pe create karke inject kar deta hai. This is called Inversion Of Control(IOC).
 
 ### Working of Dependency Injection
-![Dependency Injection](images/DependencyInjection_IOC.png)
+![Dependency Injection](/frameworks/Spring/images/DependencyInjection_IOC.png)
 
 ### Java2EE Layers
-![Java2EE Layers](images/java2EE_Layers.png)
+![Java2EE Layers](/frameworks/Spring/images/java2EE_Layers.png)
 
 ### Spring Modules
-![Spring Modules](images/Spring_Module.png)
+![Spring Modules](/frameworks/Spring/images/Spring_Module.png)
 
 ### Spring IoC (Inversion Of Control) Container
 * It is a predefine program.
@@ -38,7 +38,7 @@
 * We need to tell the spring container that which bean or pojo class it has maintain or manage.
 * We have to provide the information of our config(xml) file. We do this so that spring container could understand that which bean is dependent. Now spring container after analying the config(xml) file, it will create the object of dependent beans.
 
-![IOC](images/IOC.png)
+![IOC](/frameworks/Spring/images/IOC.png)
 
 ### ApplicationContext
 * It reprensent Spring IoC container or context.
@@ -49,7 +49,7 @@
     * **AnnotationConfigApplicationContext**:- It searches for those beans in which we have used annotation.
     * **FileSystemXMLApplicationContext**:- It searches for XML Config file in File System.
 
-![ApplicationContext](images/ApplicationContext.png)
+![ApplicationContext](/frameworks/Spring/images/ApplicationContext.png)
 
 
 
