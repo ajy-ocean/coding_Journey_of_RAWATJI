@@ -32,7 +32,7 @@
 	"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
 	"http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
 ```
-- You can download this dtd file click this link to [DOWNLOAD](https://hibernate.org/dtd/) download  file named as hibernate-configuration-3.0.dtd.
+- You can download this dtd file click this link to [DOWNLOAD](https://hibernate.org/dtd/). Download the file named as hibernate-configuration-3.0.dtd.
 - If you get any error like this **Downloading external resources is disabled** in your hibernate.cfg.xml in eclipse then follow the below steps to resolve the issue.
 - Go to top bar : Window -> Preference -> Maven -> tick the option ('download artifact javadoc')    Thats is 'Apply & Close'.
 
