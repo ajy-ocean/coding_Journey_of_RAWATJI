@@ -7,9 +7,12 @@
     * [Servlet Interface Methods](#servlet-interface-methods)
     * [My First Servlet Program](#first-servlet-program)
 * [GenericServlet](#genericservlet)
+* [HttpServlet](#httpservlet)
+* [LifeCycle Of Servlet](#life-cycle-of-servlet)
 
 ### What is a Servlet ?
 - Servlet is just a simple java program that runs on server, not only capable of handling request but also generating dynamic response.
+- Servlet in layman's terms is a server side program that is stored in server.
 
 ### Working of Servlet
 ![Servlet Architecture](/java/servlet/img/servletArchitecture.png)
@@ -239,4 +242,125 @@ public class MyServletUsingGenericServlet extends GenericServlet {
 </html>
 ```
 
+### HttpServlet
+* HttpServlet is an abstract class which extends GenericServlet class.
+* A subclass of HttpServlet must override at least one method, usually one of these:
+	* doGet, if the servlet supports HTTP GET requests
+	* doPost, for HTTP POST requests
+	* doPut, for HTTP PUT requests
+	* doDelete, for HTTP DELETE requests
+	* init and destroy, to manage resources that are held for the life of the servlet
+	* getServletInfo, which the servlet uses to provide information about itself
 
+![HttpServlet](/java/servlet/img/HttpServlet.png)
+
+**MyServletUsingHttpServlet**
+```java
+package com.learningservlet.servlets;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Date;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+public class MyServletUsingHttpServlet extends HttpServlet {
+
+	public void doGet(HttpServletRequest request, HttpServletResponse response) 
+			throws ServletException, IOException {
+			System.out.println("This is doGet() method.....");
+			response.setContentType("text/html");
+			PrintWriter out = response.getWriter();
+			out.println("<h1>This is doGet() method of MyServletUsingHttpServlet</h1>");
+			out.println("<h1>Date :- "+new Date().toString()+"</h1>");
+	}
+}
+```
+
+**web.xml**
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="https://jakarta.ee/xml/ns/jakartaee"
+	xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
+	id="WebApp_ID" version="6.0">
+	<display-name>ServletLearning</display-name>
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+		<welcome-file>index.jsp</welcome-file>
+		<welcome-file>index.htm</welcome-file>
+		<welcome-file>default.html</welcome-file>
+		<welcome-file>default.jsp</welcome-file>
+		<welcome-file>default.htm</welcome-file>
+	</welcome-file-list>
+
+	<!--Servlet Declaration -->
+
+	<!-- Servlet Declaration of MyFirstServlet -->
+	<servlet>
+		<servlet-name>MyFirstServlet</servlet-name>
+		<!-- You need to provide FULL QUALIFIED NAME i.e package & class name -->
+		<servlet-class>com.learningservlet.servlets.MyFirstServlet</servlet-class>
+	</servlet>
+
+	<!-- Servlet Declaration of MyServletUsingGenericServlet -->
+	<servlet>
+		<servlet-name>MyServletUsingGenericServlet</servlet-name>
+		<servlet-class>com.learningservlet.servlets.MyServletUsingGenericServlet</servlet-class>
+	</servlet>
+
+	<!-- Servlet Declaration of MyServletUsingHttpServlet -->
+	<servlet>
+		<servlet-name>MyServletUsingHttpServlet</servlet-name>
+		<servlet-class>com.learningservlet.servlets.MyServletUsingHttpServlet</servlet-class>
+	</servlet>
+
+	<!-- ================================================================================== -->
+
+	<!-- Mapping -->
+
+	<!-- Mapping of MyFirstServlet -->
+	<!-- This is an important tag because here we define our url pattern through 
+		which we will get our servlet -->
+	<servlet-mapping>
+		<servlet-name>MyFirstServlet</servlet-name>
+		<url-pattern>/MyFirstServlet</url-pattern>
+	</servlet-mapping>
+
+	<!-- Mapping of MyServletUsingGenericServlet -->
+	<servlet-mapping>
+		<servlet-name>MyServletUsingGenericServlet</servlet-name>
+		<url-pattern>/MyServletUsingGenericServlet</url-pattern>
+	</servlet-mapping>
+
+	<!-- Mapping of MyServletUsingHttpServlet -->
+	<servlet-mapping>
+		<servlet-name>MyServletUsingHttpServlet</servlet-name>
+		<url-pattern>/MyServletUsingHttpServlet</url-pattern>
+	</servlet-mapping>
+</web-app>
+```
+
+**index.html**
+```html
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<h1>My First Servlet</h1>
+	<h1><a href="MyFirstServlet">My First Servlet</a></h1>
+	<h1><a href="MyServletUsingGenericServlet">MyServletUsingGenericServlet</a></h1>
+	<h1><a href="MyServletUsingHttpServlet">MyServletUsingHttpServlet</a></h1>
+</body>
+</html>
+```
+
+### Life Cycle of Servlet
+
+![LifeCycle Of Servlet](/java/servlet/img/LifeCycleOfServlet.png)
