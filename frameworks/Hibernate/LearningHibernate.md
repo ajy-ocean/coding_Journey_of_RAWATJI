@@ -440,7 +440,7 @@ public class Address {
 	@Column(name = "is_open")
 	private boolean isOpen;
 
-	@Transient // This column(field) will not created in our table
+	@Transient // This column(field) will not be created in our table
 	private double familyIncome;
 
 	@Column(name = "date_added")
