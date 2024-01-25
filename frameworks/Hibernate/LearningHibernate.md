@@ -6,6 +6,8 @@
 * [Hibernate Configuration Code](#hibernate-configuration-code)
 * [First Hibernate Program](#first-hibernate-program)
 * [Commonly Used Hibernate Annotations](#commonly-used-hibernate-annotations)
+* [Fetch Data using get() method & load() method](#fetch-data-using-get-method--load-method)
+* [@Embeddable Annotation](#embeddable-annotation)
 
 ### What is Hibernate Framework?
 * Hibernate is a java framework that simplifies the developement of java application to interact with the database.
@@ -110,7 +112,7 @@ public class App {
 
 ### First Hibernate Program
 
-* Student.class
+**Student.class**
 ```java
 package com.learningHibernate;
 
@@ -178,7 +180,7 @@ public class Student {
 }
 ```
 
-* hibernate.cfg.xml
+**hibernate.cfg.xml**
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-configuration PUBLIC
@@ -222,7 +224,7 @@ public class Student {
 </hibernate-configuration>
 ```
 
-* App.java (Main Class)
+**App.java (Main Class)**
 ```java
 package com.learningHibernate;
 
@@ -295,7 +297,7 @@ public class App {
 * ***Other annotations:-*** @OneToOne, @OneToMany, @ManyToOne, @JoinColumn etc.
 * **Below program uses all above annotations**.
 
-hibernate.cfg.xml
+**hibernate.cfg.xml**
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-configuration PUBLIC
@@ -321,7 +323,7 @@ hibernate.cfg.xml
 		<!-- But if your are using latest version of hibernate then you need to add MySQL8Dialect-->
 		<property name="dialect">org.hibernate.dialect.MySQL8Dialect</property>
 		
-		<!-- This property of hibernate helps to UPDATE table automatically -->
+		<!-- This property of hibernate helps to create table automatically -->
 		<property name="hbm2ddl.auto">create</property>
 
 		<!-- This property is used to see what query hibernate has fired -->
@@ -335,7 +337,7 @@ hibernate.cfg.xml
 </hibernate-configuration>
 ```
 
-Student.java
+**Student.java**
 ```java
 package com.learningHibernate;
 
@@ -403,7 +405,7 @@ public class Student {
 }
 ```
 
-Address.java
+**Address.java**
 ```java
 package com.learningHibernate;
 
@@ -524,7 +526,7 @@ public class Address {
 	}
 }
 ```
-App.java
+**App.java (Main Class)**
 ```java
 package com.learningHibernate;
 
@@ -609,9 +611,306 @@ public class App {
 }
 ```
 
+### Fetch Data using get() method & load() method.
 
+![get()Vsload()](/frameworks/Hibernate/img/get()VSload().png)
 
+![understandlingGetandLoadMethod](/frameworks/Hibernate/img/understandingGetandLoadMethod.png)
 
+**FetchDataUsingHibernate (Main Class)** (Use above code to run this program)
+```java
+package com.learningHibernate;
 
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
 
+public class FetchDataUsingHibernate {
 
+	public static void main(String[] args) {
+		// get, load and methods...
+		Configuration cfg = new Configuration();
+		cfg.configure("hibernate.cfg.xml");
+		SessionFactory sessionFactory = cfg.buildSessionFactory();
+		Session session = sessionFactory.openSession();
+
+		// First uncomment get() method then comment again afterwards uncomment load() method
+		/*
+		 * // get() method.. 
+		 * System.out.println("---------------------------");
+		 * System.out.println("Using get() method");
+		 * System.out.println("---------------------------");
+		 * 
+		 * // Student Class 
+		 * Student studentUsingGetMethod = (Student)session.get(Student.class, 101);
+		 * System.out.println("Student Details using get() method :- " + studentUsingGetMethod + "\n");
+		 * 
+		 * // Address Class 
+		 * Address address = (Address)session.get(Address.class, 1);
+		 * System.out.println("Address details using get() method");
+		 * System.out.println("City Name :- " + address.getCity());
+		 * System.out.println("Street Name :- " + address.getStreet());
+		 * 
+		 * // Here, Hibernate won't write another select query because data is already
+		 * // present in the cache memory
+		 * Address againUsingAddress = (Address)session.get(Address.class, 1);
+		 * System.out.println("City Name :- " + againUsingAddress.getCity());
+		 * System.out.println("Street Name :- " + againUsingAddress.getStreet() + "\n");
+		 * 
+		 * // Here, get() method will return null since 3(id) is not there.
+		 * Address secondAddress = (Address)session.get(Address.class, 3);
+		 * System.out.println("Value :- " + secondAddress + "\n");
+		 * 
+		 */
+
+		/*
+		 * 
+		 * // load() method.. 
+		 * 
+		 * System.out.println("---------------------------");
+		 * System.out.println("Using load() method");
+		 * System.out.println("---------------------------");
+		 * 
+		 * // In load() method if we do not used the object then hibernate will not create query
+		 * // let the student details print statement be commented
+		 * 
+		 * Student studentUsingLoadMethod = (Student) session.load(Student.class, 102);
+		 * // System.out.println("Student Details using load() method :- " + studentUsingLoadMethod + "\n");
+		 * 
+		 * // Here, same hibernate will not write any select query 
+		 * 
+		 * Student secondStudentUsingLoadMethod = (Student) session.load(Student.class, 101); 
+		 * // uncomment below line to see the select query 
+		 * // System.out.println("Student Details using load() method :- " + secondStudentUsingLoadMethod + "\n");
+		 * 
+		 * // Here, load() will give us an Exception saying ObjectNotFoundException
+		 * // Uncomment below lines of code.
+		 * 
+		 * // Student studentUsingLoadMethodReturnsException = (Student)session.load(Student.class, 102); 
+		 * // System.out.println(studentUsingLoadMethodReturnsException);
+		 * 
+		 */ 
+		
+		session.close();
+		sessionFactory.close();
+	}
+}
+```
+
+### @Embeddable Annotation
+
+![@Embeddable Annotation](/frameworks/Hibernate/img/EmbeddableAnnotation.png)
+
+**EmbeddableAnnotation.java (Main Class)**
+```java
+package com.learningHibernate;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
+
+public class EmbeddableAnnotation {
+
+	public static void main(String[] args) {
+		Configuration cfg = new Configuration();
+		cfg.configure("hibernate.cfg.xml");
+		SessionFactory sessionFactory = cfg.buildSessionFactory();
+
+		Student student = new Student();
+		student.setId(69);
+		student.setName("Ajay");
+		student.setCity("Milf City");
+
+		Certificate certificate = new Certificate();
+		certificate.setCourse("Hibernate");
+		certificate.setDuration("4 Months");
+		student.setCertificate(certificate);
+		
+		Student yamaguchi = new Student();
+		yamaguchi.setId(45);
+		yamaguchi.setName("Yamaguchi");
+		yamaguchi.setCity("Kyoto");
+		
+		Certificate yamaguchiCertificate = new Certificate();
+		yamaguchiCertificate.setCourse("Linux");
+		yamaguchiCertificate.setDuration("3 Months");
+		yamaguchi.setCertificate(yamaguchiCertificate);
+		
+		Session session  = sessionFactory.openSession();
+		Transaction transcation = session.beginTransaction();
+		
+		// Saving Objects
+		session.save(student);
+		session.save(yamaguchi);
+		
+		transcation.commit();
+		session.close();
+		sessionFactory.close();
+	}
+}
+```
+
+**Certificate.java**
+```java
+package com.learningHibernate;
+
+import jakarta.persistence.Embeddable;
+
+@Embeddable
+public class Certificate {
+
+	// Fields (Instance Variable)
+	private String course;
+	private String duration;
+
+	// Contructors
+	public Certificate() {
+		super();
+	}
+
+	public Certificate(String course, String duration) {
+		super();
+		this.course = course;
+		this.duration = duration;
+	}
+
+	// Setters & Getters
+	public String getCourse() {
+		return course;
+	}
+
+	public void setCourse(String course) {
+		this.course = course;
+	}
+
+	public String getDuration() {
+		return duration;
+	}
+
+	public void setDuration(String duration) {
+		this.duration = duration;
+	}
+
+}
+```
+
+**Student.java**
+```java
+package com.learningHibernate;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+
+// Annotation
+/*
+ * This is a class level annotation which is used to make our class an Entity 
+ */
+@Entity
+/*
+ * @Entity("student_details"):- This is annotation can be used to change the
+ * name of our entity
+ */
+public class Student {
+	// Instance Variable (Fields)
+
+	@Id // This is annotation is used make our field as primary key
+	private int id;
+
+	private String name;
+	private String city;
+
+	// Reference
+	private Certificate certificate;
+
+	// Constructors
+	public Student() {
+		super();
+	}
+
+	public Student(int id, String name, String city) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.city = city;
+	}
+
+	// Getters & Setters
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public Certificate getCertificate() {
+		return certificate;
+	}
+
+	public void setCertificate(Certificate certificate) {
+		this.certificate = certificate;
+	}
+
+	@Override
+	public String toString() {
+		return this.id + " : " + this.name + " : " + this.city;
+	}
+}
+```
+
+**hibernate.cfg.xml**
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+	"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+	<session-factory>
+		<!-- We have to mention which Driver are we using here we are using MySql -->
+		<property name="connection.driver_class">com.mysql.cj.jdbc.Driver</property>
+
+		<!-- Mention your database url -->
+		<property name="connection.url">jdbc:mysql://localhost:3306/myHiber</property>
+
+		<!-- Provide your database username and password -->
+		<property name="connection.username">ocean</property>
+		<property name="connection.password">ocean@root</property>
+
+		<!-- dialect is a property which is specific for the database you are using 
+			here since I'm using MySql -->
+		<!-- If you are using older version of version of hibernate -->
+		<!-- <property name="dialect">org.hibernate.dialect.MySQLDialect</property>-->
+		<!-- But if your are using latest version of hibernate then you need to add MySQL8Dialect-->
+		<property name="dialect">org.hibernate.dialect.MySQL8Dialect</property>
+		
+		<!-- This property of hibernate helps to UPDATE table automatically -->
+		<property name="hbm2ddl.auto">create</property>
+
+		<!-- This property is used to see what query hibernate has fired -->
+		<property name="show_sql">true</property>
+
+		<!-- This is used to map our class so that hibernate can understand that 
+			we have a class that should be treated as an entity -->
+		<mapping class="com.learningHibernate.Student" />
+		<mapping class="com.learningHibernate.Address" />
+	</session-factory>
+</hibernate-configuration>
+```
