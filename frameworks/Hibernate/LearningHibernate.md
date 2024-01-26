@@ -9,7 +9,8 @@
 * [Fetch Data using get() method & load() method](#fetch-data-using-get-method--load-method)
 * [@Embeddable Annotation](#embeddable-annotation)
 * [OneToOne Mapping](#onetoone-mapping)
-* [OneToMany & ManyToOne Mapping](#onetomany--manytoone)
+* [OneToMany & ManyToOne Mapping](#onetomany-and-manytoone-mapping)
+* [ManyToManyMapping](#manytomanymapping)
 
 ### What is Hibernate Framework?
 * Hibernate is a java framework that simplifies the developement of java application to interact with the database.
@@ -1148,7 +1149,9 @@ public class Answer {
 </hibernate-configuration>
 ```
 
-### OneToMany & ManyToOne Mapping
+### OneToMany and ManyToOne Mapping
+
+![OneToMany Mapping](/frameworks/Hibernate/img/OneToManyMapping.png)
 
 **HibernateOnetoManyandManyToOneMapping.java**
 ```java
@@ -1396,6 +1399,259 @@ public class Answer {
 		<mapping class="com.learninghibernatemapping.Question" />
 		<mapping class="com.learninghibernatemapping.Answer" />
 		
+	</session-factory>
+</hibernate-configuration>
+```
+
+### ManyToManyMapping
+
+![ManyToManyMapping](/frameworks/Hibernate/img/ManyToManyMapping.png)
+
+**HibernateManyToManyMapping.java**
+```java
+package com.learninghibernatemapping;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
+
+public class HibernateManyToManyMapping {
+
+	public static void main(String[] args) {
+		Configuration config = new Configuration();
+		config.configure("hibernate.cfg.xml");
+		SessionFactory sessionFactory = config.buildSessionFactory();
+
+		// Creating Employees
+		Emp firstEmp = new Emp();
+		Emp secondEmp = new Emp();
+		// Assigning names & id's
+		firstEmp.setEid(34);
+		firstEmp.setEname("Ram");
+		secondEmp.setEid(69);
+		secondEmp.setEname("Jonny Bhaiya");
+		
+		// Creating Projects
+		Project firstProject = new Project();
+		Project secondProject = new Project();
+		// Assigning projects name & id
+		firstProject.setPid(89);
+		firstProject.setProjectName("Library Management System");
+		secondProject.setPid(67);
+		secondProject.setProjectName("CHATBOT");
+		
+		// Creating two lists:- Employee & Project list
+		List<Project> listOfProjects = new ArrayList<Project>();
+		List<Emp> listOfEmployees = new ArrayList<Emp>();
+		
+		// Adding Employees
+		listOfEmployees.add(firstEmp);
+		listOfEmployees.add(secondEmp);
+		
+		// Adding Projects
+		listOfProjects.add(firstProject);
+		listOfProjects.add(secondProject);
+		
+		// Assigning projects & employees
+		firstEmp.setProjects(listOfProjects);
+		secondProject.setEmp(listOfEmployees);
+		
+		Session session = sessionFactory.openSession();
+		Transaction transaction = session.beginTransaction();
+		
+		// Saving to db
+		session.save(firstEmp);
+		session.save(secondEmp);
+		session.save(firstProject);
+		session.save(secondProject);
+		
+		// Committing
+		transaction.commit();
+		
+		session.close();
+		sessionFactory.close();
+	}
+}
+```
+
+**Emp.java**
+```java
+package com.learninghibernatemapping;
+
+import java.util.List;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+
+@Entity
+public class Emp {
+
+	@Id
+	private int eid;
+	private String ename;
+
+	@ManyToMany
+	@JoinTable
+	(
+			name = "emp_assign_to_project",
+			joinColumns = {@JoinColumn(name = "eid")},
+			inverseJoinColumns = {@JoinColumn(name="pid")}
+	)
+	private List<Project> projects;
+	
+	// Contructors
+	public Emp() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public Emp(int eid, String ename, List<Project> projects) {
+		super();
+		this.eid = eid;
+		this.ename = ename;
+		this.projects = projects;
+	}
+
+	// Getters & Setters
+	public int getEid() {
+		return eid;
+	}
+
+	public void setEid(int eid) {
+		this.eid = eid;
+	}
+
+	public String getEname() {
+		return ename;
+	}
+
+	public void setEname(String ename) {
+		this.ename = ename;
+	}
+
+	public List<Project> getProjects() {
+		return projects;
+	}
+
+	public void setProjects(List<Project> projects) {
+		this.projects = projects;
+	}
+	
+}
+```
+
+**Project.java**
+```java
+package com.learninghibernatemapping;
+
+import java.util.List;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+
+@Entity
+public class Project {
+
+	@Id
+	private int pid;
+
+	@Column(name = "project_name")
+	private String projectName;
+
+	@ManyToMany(mappedBy = "projects")
+	private List<Emp> emps;
+
+	// Contructors
+	public Project() {
+		super();
+	}
+
+	public Project(int pid, String projectName, List<Emp> emps) {
+		super();
+		this.pid = pid;
+		this.projectName = projectName;
+		this.emps = emps;
+	}
+
+	// Getters and Setters
+	public int getPid() {
+		return pid;
+	}
+
+	public void setPid(int pid) {
+		this.pid = pid;
+	}
+
+	public String getProjectName() {
+		return projectName;
+	}
+
+	public void setProjectName(String projectName) {
+		this.projectName = projectName;
+	}
+
+	public List<Emp> getEmp() {
+		return emps;
+	}
+
+	public void setEmp(List<Emp> emps) {
+		this.emps = emps;
+	}
+}
+```
+
+**hibernate.cfg.xml**
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+	"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+	<session-factory>
+		<!-- We have to mention which Driver are we using here we are using MySql -->
+		<property name="connection.driver_class">com.mysql.cj.jdbc.Driver</property>
+
+		<!-- Mention your database url -->
+		<property name="connection.url">jdbc:mysql://localhost:3306/myHiber</property>
+
+		<!-- Provide your database username and password -->
+		<property name="connection.username">ocean</property>
+		<property name="connection.password">ocean@root</property>
+
+		<!-- dialect is a property which is specific for the database you are using 
+			here since I'm using MySql -->
+		<!-- If you are using older version of version of hibernate -->
+		<!-- <property name="dialect">org.hibernate.dialect.MySQLDialect</property> -->
+		<!-- But if your are using latest version of hibernate then you need to 
+			add MySQL8Dialect -->
+		<property name="dialect">org.hibernate.dialect.MySQL8Dialect</property>
+
+		<!-- This property of hibernate helps to UPDATE table automatically -->
+		<property name="hbm2ddl.auto">update</property>
+
+		<!-- This property is used to see what query hibernate has fired -->
+		<property name="show_sql">true</property>
+
+		<!-- This is used to map our class so that hibernate can understand that 
+			we have a class that should be treated as an entity -->
+		<mapping class="com.learningHibernate.Student" />
+		<mapping class="com.learningHibernate.Address" />
+
+		<mapping class="com.learninghibernatemapping.Question" />
+		<mapping class="com.learninghibernatemapping.Answer" />
+
+		<mapping class="com.learninghibernatemapping.Emp" />
+		<mapping class="com.learninghibernatemapping.Project" />
 	</session-factory>
 </hibernate-configuration>
 ```
