@@ -8,6 +8,7 @@
 * [Commonly Used Hibernate Annotations](#commonly-used-hibernate-annotations)
 * [Fetch Data using get() method & load() method](#fetch-data-using-get-method--load-method)
 * [@Embeddable Annotation](#embeddable-annotation)
+* [OneToOne Mapping](#onetoone-mapping)
 
 ### What is Hibernate Framework?
 * Hibernate is a java framework that simplifies the developement of java application to interact with the database.
@@ -911,6 +912,237 @@ public class Student {
 			we have a class that should be treated as an entity -->
 		<mapping class="com.learningHibernate.Student" />
 		<mapping class="com.learningHibernate.Address" />
+	</session-factory>
+</hibernate-configuration>
+```
+
+### OneToOne Mapping
+
+![OneToOne Mapping](/frameworks/Hibernate/img/OneToOne.png)
+
+**HibernateOneToOneMapping.java (main class)**
+```java
+package com.learninghibernatemapping;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
+
+public class HibernateOneToOneMapping {
+
+	public static void main(String[] args) {
+		Configuration cfg = new Configuration();
+		cfg.configure("hibernate.cfg.xml");
+		SessionFactory sessionFactory = cfg.buildSessionFactory();
+
+		// Creating first question
+		Question firstQuestion = new Question();
+		firstQuestion.setQuestionId(1212);
+		firstQuestion.setQuestion("What is Java?");
+
+		// Creating first answer
+		Answer firstAnswer = new Answer();
+		firstAnswer.setAnswerId(343);
+		firstAnswer.setAnswer("Java is a Programming Language");
+		firstAnswer.setQuestion(firstQuestion);
+		firstQuestion.setAnswer(firstAnswer);
+
+		// Creating second question
+		Question secondQuestion = new Question();
+		secondQuestion.setQuestionId(242);
+		secondQuestion.setQuestion("What is Collection Framework?");
+
+		// creating second answer
+		Answer secondAnswer = new Answer();
+		secondAnswer.setAnswerId(344);
+		secondAnswer.setAnswer("API to work with objects in Java");
+		secondAnswer.setQuestion(secondQuestion);
+		secondQuestion.setAnswer(secondAnswer);
+
+		// Creating Session
+		Session session = sessionFactory.openSession();
+		Transaction transaction = session.beginTransaction();
+
+		// Saving to DB
+		session.save(firstQuestion);
+		session.save(secondQuestion);
+		session.save(firstAnswer);
+		session.save(secondAnswer);
+
+		transaction.commit();
+		
+		// Fetching 
+		Question question = (Question) session.get(Question.class, 242);
+		System.out.println(question.getQuestion());
+		System.out.println(question.getAnswer().getAnswer());
+		
+		session.close();
+		sessionFactory.close();
+	}
+}
+```
+
+**Question.java**
+```java
+package com.learninghibernatemapping;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+
+@Entity
+public class Question {
+
+	@Id
+	@Column(name = "question_id")
+	private int questionId;
+	
+	private String question;
+	
+	@OneToOne
+	@JoinColumn(name = "answer_id")
+	private Answer answer;
+
+	public Question() {
+		super();
+	}
+
+	public Question(int questionId, String question, Answer answer) {
+		super();
+		this.questionId = questionId;
+		this.question = question;
+		this.answer = answer;
+	}
+
+	public int getQuestionId() {
+		return questionId;
+	}
+
+	public void setQuestionId(int questionId) {
+		this.questionId = questionId;
+	}
+
+	public String getQuestion() {
+		return question;
+	}
+
+	public void setQuestion(String question) {
+		this.question = question;
+	}
+
+	public Answer getAnswer() {
+		return answer;
+	}
+
+	public void setAnswer(Answer answer) {
+		this.answer = answer;
+	}
+
+}
+```
+
+**Answer.java**
+```java
+package com.learninghibernatemapping;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+
+@Entity
+public class Answer {
+
+	@Id
+	@Column(name = "answer_id")
+	private int answerId;
+	private String answer;
+	
+	@OneToOne(mappedBy = "answer")
+	@JoinColumn(name = "question_id")
+	private Question question;
+
+	public Answer() {
+		super();
+	}
+
+	public Answer(int answerId, String answer) {
+		super();
+		this.answerId = answerId;
+		this.answer = answer;
+	}
+
+	public int getAnswerId() {
+		return answerId;
+	}
+
+	public void setAnswerId(int answerId) {
+		this.answerId = answerId;
+	}
+
+	public String getAnswer() {
+		return answer;
+	}
+
+	public void setAnswer(String answer) {
+		this.answer = answer;
+	}
+
+	public Question getQuestion() {
+		return question;
+	}
+
+	public void setQuestion(Question question) {
+		this.question = question;
+	}
+
+}
+```
+
+**hibernate.cfg.xml**
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+	"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+	<session-factory>
+		<!-- We have to mention which Driver are we using here we are using MySql -->
+		<property name="connection.driver_class">com.mysql.cj.jdbc.Driver</property>
+
+		<!-- Mention your database url -->
+		<property name="connection.url">jdbc:mysql://localhost:3306/myHiber</property>
+
+		<!-- Provide your database username and password -->
+		<property name="connection.username">ocean</property>
+		<property name="connection.password">ocean@root</property>
+
+		<!-- dialect is a property which is specific for the database you are using 
+			here since I'm using MySql -->
+		<!-- If you are using older version of version of hibernate -->
+		<!-- <property name="dialect">org.hibernate.dialect.MySQLDialect</property>-->
+		<!-- But if your are using latest version of hibernate then you need to add MySQL8Dialect-->
+		<property name="dialect">org.hibernate.dialect.MySQL8Dialect</property>
+		
+		<!-- This property of hibernate helps to UPDATE table automatically -->
+		<property name="hbm2ddl.auto">create</property>
+
+		<!-- This property is used to see what query hibernate has fired -->
+		<property name="show_sql">true</property>
+
+		<!-- This is used to map our class so that hibernate can understand that 
+			we have a class that should be treated as an entity -->
+		<mapping class="com.learningHibernate.Student" />
+		<mapping class="com.learningHibernate.Address" />
+		
+		<mapping class="com.learninghibernatemapping.Question" />
+		<mapping class="com.learninghibernatemapping.Answer" />
+		
 	</session-factory>
 </hibernate-configuration>
 ```
