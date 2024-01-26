@@ -11,6 +11,7 @@
 * [OneToOne Mapping](#onetoone-mapping)
 * [OneToMany & ManyToOne Mapping](#onetomany-and-manytoone-mapping)
 * [ManyToManyMapping](#manytomanymapping)
+* [Fetch Type:- Lazy & Eager Loading](#fetch-type)
 
 ### What is Hibernate Framework?
 * Hibernate is a java framework that simplifies the developement of java application to interact with the database.
@@ -1407,7 +1408,7 @@ public class Answer {
 
 ![ManyToManyMapping](/frameworks/Hibernate/img/ManyToManyMapping.png)
 
-**HibernateManyToManyMapping.java**
+**HibernateManyToManyMapping.java (main Class)**
 ```java
 package com.learninghibernatemapping;
 
@@ -1641,6 +1642,174 @@ public class Project {
 
 		<!-- This property is used to see what query hibernate has fired -->
 		<property name="show_sql">true</property>
+
+		<!-- This is used to map our class so that hibernate can understand that 
+			we have a class that should be treated as an entity -->
+		<mapping class="com.learningHibernate.Student" />
+		<mapping class="com.learningHibernate.Address" />
+
+		<mapping class="com.learninghibernatemapping.Question" />
+		<mapping class="com.learninghibernatemapping.Answer" />
+
+		<mapping class="com.learninghibernatemapping.Emp" />
+		<mapping class="com.learninghibernatemapping.Project" />
+	</session-factory>
+</hibernate-configuration>
+```
+
+### Fetch Type
+ * Eager Fetch Type :- This will load the object on the spot.
+ * Lazy Fetch Type :- This will load the object only when we use the get() method on it.
+
+![Fetch type](/frameworks/Hibernate/img/FetchType.png)
+
+**FetchUsingLazyAndEagerType.java (main class)**
+```java
+package com.learninghibernatemapping;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
+
+public class FetchUsingLazyAndEagerType {
+
+	public static void main(String[] args) {
+
+		Configuration config = new Configuration();
+		config.configure("hibernate.cfg.xml");
+		SessionFactory sessionFactory = config.buildSessionFactory();
+
+		Session session = sessionFactory.openSession();
+		Transaction transaction = session.beginTransaction();
+
+		Question question = (Question) session.get(Question.class, 1212);
+
+		System.out.println(question.getQuestionId());
+		System.out.println(question.getQuestion());
+		
+		// Lazy Loading
+		/*
+		 * Here, you can see the query that hibernate has execute 
+		 * in that query it has only selected the question not the answer
+		 * but the moment I try to get the answer it will load the answer
+		 * 
+		 * To see the difference just comment this print statement run the program see what query
+		 * hibernate has executed 
+		 * Uncomment program to again see what sql query hibernate has not executed.
+		 * 
+		*/
+		
+		System.out.println(question.getAnswers().size());
+		
+		transaction.commit();
+		sessionFactory.close();
+		session.close();
+	}
+
+}
+```
+
+**Question.java**
+```java
+package com.learninghibernatemapping;
+
+import java.util.List;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+
+@Entity
+public class Question {
+
+	@Id
+	@Column(name = "question_id")
+	private int questionId;
+
+	private String question;
+	
+	// Fetch Type:- Eager loading default is lazy loading
+	@OneToMany(mappedBy = "question", fetch = FetchType.EAGER)
+	
+	// Explicit Lazy loading
+	// @OneToMany(mappedBy = "question", fetch = FetchType.LAZY)
+	private List<Answer> answers;
+
+	public Question() {
+		super();
+	}
+
+	public Question(int questionId, String question, List<Answer> answers) {
+		super();
+		this.questionId = questionId;
+		this.question = question;
+		this.answers = answers;
+	}
+
+	public int getQuestionId() {
+		return questionId;
+	}
+
+	public void setQuestionId(int questionId) {
+		this.questionId = questionId;
+	}
+
+	public String getQuestion() {
+		return question;
+	}
+
+	public void setQuestion(String question) {
+		this.question = question;
+	}
+
+	public List<Answer> getAnswers() {
+		return answers;
+	}
+
+	public void setAnswers(List<Answer> answers) {
+		this.answers = answers;
+	}
+}
+```
+
+**hibernate.cfg.xml**
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+	"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+	<session-factory>
+		<!-- We have to mention which Driver are we using here we are using MySql -->
+		<property name="connection.driver_class">com.mysql.cj.jdbc.Driver</property>
+
+		<!-- Mention your database url -->
+		<property name="connection.url">jdbc:mysql://localhost:3306/myHiber</property>
+
+		<!-- Provide your database username and password -->
+		<property name="connection.username">ocean</property>
+		<property name="connection.password">ocean@root</property>
+
+		<!-- dialect is a property which is specific for the database you are using 
+			here since I'm using MySql -->
+		<!-- If you are using older version of version of hibernate -->
+		<!-- <property name="dialect">org.hibernate.dialect.MySQLDialect</property> -->
+		<!-- But if your are using latest version of hibernate then you need to 
+			add MySQL8Dialect -->
+		<property name="dialect">org.hibernate.dialect.MySQL8Dialect</property>
+
+		<!-- This property of hibernate helps to UPDATE table automatically -->
+		<property name="hbm2ddl.auto">update</property>
+
+		<!-- This property is used to see what query hibernate has fired -->
+		<property name="show_sql">true</property>
+		
+		<!-- This property is used to format our hibernate sql query -->
+		<property name="format_sql">true</property>
 
 		<!-- This is used to map our class so that hibernate can understand that 
 			we have a class that should be treated as an entity -->
