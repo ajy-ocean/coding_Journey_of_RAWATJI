@@ -12,6 +12,7 @@
 * [OneToMany & ManyToOne Mapping](#onetomany-and-manytoone-mapping)
 * [ManyToManyMapping](#manytomanymapping)
 * [Fetch Type:- Lazy & Eager Loading](#fetch-type)
+* [Hibernate Object State || Persistent Lifecycle](#hibernate-object-state--persistent-lifecycle)
 
 ### What is Hibernate Framework?
 * Hibernate is a java framework that simplifies the developement of java application to interact with the database.
@@ -1824,3 +1825,7 @@ public class Question {
 	</session-factory>
 </hibernate-configuration>
 ```
+
+### Hibernate Object State || Persistent Lifecycle 
+
+![Hibernate Object State or Persistent Lifecycle ](/frameworks/Hibernate/img/HibernateObjectStateAndLifecycle.png)
