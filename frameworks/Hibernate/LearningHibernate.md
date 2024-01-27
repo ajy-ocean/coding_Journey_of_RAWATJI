@@ -1831,6 +1831,7 @@ public class Question {
 ![Hibernate Object State or Persistent Lifecycle ](/frameworks/Hibernate/img/HibernateObjectStateAndLifecycle.png)
 
 #### This below code show all three states i.e Transient, Persistent and Detached except Removed try to perform Removed state on your own.
+- For more clarity about Hibernate States Follow this [Link](https://nikhilsukhani.medium.com/hibernate-lifecycle-states-in-hibernate-transient-persistent-detached-removed-40ba2f689b07)
 
 **HibernateObjectStates.java**
 ```java
@@ -1877,12 +1878,20 @@ public class HibernateObjectStates {
 		 * it is not associated with our session but it still associated with our Database
 		 */
 		session.close();
-		student.setName("Sasuke");
+		
+		/*
+		 * If we delete our object then our student object goes into Removed state 
+		 * which means it is not associated with our database but it is still
+		 * associated with our session
+		*/	
+		// session.delete(student);
 		
 		/* As you can see since our session is closed so whatever changes me make 
 		 * won't reflect in our database since our student object is in detached state
-		 */
+		*/
+		student.setName("Sasuke");
 		System.out.println(student);
+		
 		sessionFactory.close();
 	}
 }
