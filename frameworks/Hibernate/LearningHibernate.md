@@ -1829,3 +1829,62 @@ public class Question {
 ### Hibernate Object State || Persistent Lifecycle 
 
 ![Hibernate Object State or Persistent Lifecycle ](/frameworks/Hibernate/img/HibernateObjectStateAndLifecycle.png)
+
+#### This below code show all three states i.e Transient, Persistent and Detached except Removed try to perform Removed state on your own.
+
+**HibernateObjectStates.java**
+```java
+package com.learninghibernatemapping;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
+
+import com.learningHibernate.Certificate;
+import com.learningHibernate.Student;
+
+public class HibernateObjectStates {
+	public static void main(String[] args) {
+
+		/*
+		 * Practical Of Hibernate States:- Transient,Persistent, Detached and Removed.
+		 */
+		System.out.println("Hibernate States");
+		SessionFactory sessionFactory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
+		
+		// Creating Student object
+		Student student = new Student();
+		student.setId(1414);
+		student.setName("Hinata");
+		student.setCity("Konoha");
+		student.setCertificate(new Certificate("Java Spring Course", "6 months"));
+		// Now this student object is in Transient state :- This is not associated with Session and database.
+		
+		Session session  = sessionFactory.openSession();
+		Transaction transaction = session.beginTransaction();
+		session.save(student);
+		// After saving our student object to db
+		// Now this our student object is associated with Session and Database
+		// Hence, our student object is in Persistent state
+		
+		// Modified our object
+		student.setName("Naruto");
+		transaction.commit();
+		
+		/*
+		 * Detached state:- Now our student object goes in detached state which means 
+		 * it is not associated with our session but it still associated with our Database
+		 */
+		session.close();
+		student.setName("Sasuke");
+		
+		/* As you can see since our session is closed so whatever changes me make 
+		 * won't reflect in our database since our student object is in detached state
+		 */
+		System.out.println(student);
+		sessionFactory.close();
+	}
+}
+```
+
