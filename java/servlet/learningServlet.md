@@ -9,6 +9,7 @@
 * [GenericServlet](#genericservlet)
 * [HttpServlet](#httpservlet)
 * [LifeCycle Of Servlet](#life-cycle-of-servlet)
+* [How to fetch data of form using servlet](#how-to-fetch-data-of-form-using-servlet)
 
 ### What is a Servlet ?
 - Servlet is just a simple java program that runs on server, not only capable of handling request but also generating dynamic response.
@@ -364,3 +365,243 @@ public class MyServletUsingHttpServlet extends HttpServlet {
 ### Life Cycle of Servlet
 
 ![LifeCycle Of Servlet](/java/servlet/img/LifeCycleOfServlet.png)
+
+### How to fetch data of form using servlet
+
+**RegisterServlet (Main Class)**
+```java
+package com.learningservlet.servlets;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+public class RegisterServlet extends HttpServlet {
+
+	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+		// Set content type for response
+		response.setContentType("text/html");
+
+		// This helps to print in the browser
+		PrintWriter out = response.getWriter();
+		out.println("<h1>Welcome to RegisterServlet</h2>");
+
+		// Fetching data and Printing data on the browser
+		String name = request.getParameter("user_name");
+		String password = request.getParameter("user_password");
+		String email = request.getParameter("user_email");
+		String gender = request.getParameter("user_gender");
+		String course = request.getParameter("user_course");
+		String termAndCondtion = request.getParameter("condition");
+
+		if (termAndCondtion != null) {
+
+			if (termAndCondtion.equals("checked")) {
+				out.println("<h1>Name:- " + name + "</h1>");
+				out.println("<h1>Password:- " + password + "</h1>");
+				out.println("<h1>Gender:- " + gender + "</h1>");
+				out.println("<h1>Email:- " + email + "</h1>");
+				out.println("<h1>Course:- " + course + "</h1>");
+
+			} else {
+				out.println("<h1>Something went wrong...</h1>");
+			}
+		} else {
+			out.println("<h1>You have not checked terms and condition</h1>");
+		}
+	}
+}
+```
+
+**form.html**
+```html
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Form page | Learning Servlet</title>
+
+<style>
+.container {
+	width: 38%;
+	border: 1px solid black;
+	margin: auto;
+	margin-top: 60px; padding : 40px;
+	font-size: 25px;
+	padding: 40px;
+}
+
+#myform table tr td input {
+	font-size: 20px;
+}
+
+#myform table tr td button {
+	font-size: 20px;
+}
+
+#myform table tr td select {
+	font-size: 20px;
+}
+</style>
+</head>
+<body>
+	<div class="container">
+		<h1>My Form</h1>
+		<!-- post is more secure as compare to get method.
+		     We can share audio, video but in get method we have limitation
+		-->
+		<form id="myform" action="RegisterServlet" method="post">
+			<table>
+				<tr>
+					<td>Enter Name :-</td>
+					<td><input type="text" name="user_name"
+						placeholder="Enter your name" /></td>
+				</tr>
+
+				<tr>
+					<td>Enter Password :-</td>
+					<td><input type="password" name="user_password"
+						placeholder="Enter your password" /></td>
+				</tr>
+
+				<tr>
+					<td>Enter Email :-</td>
+					<td><input type="email" name="user_email"
+						placeholder="Enter your email" /></td>
+				</tr>
+
+				<tr>
+					<td>Select Gender</td>
+					<td><input type="radio" name="user_gender" value="male" />&nbsp;
+						Male &nbsp; <input type="radio" name="user_gender" value="female" />
+						Female</td>
+				</tr>
+
+				<tr>
+					<td>Select your course</td>
+					<td><select name="user_course">
+							<option value="Java">Java</option>
+							<option value="Hibernate">Hibernate</option>
+							<option value="Spring">Spring</option>
+							<option value="J2EE">J2EE</option>
+					</select></td>
+				</tr>
+
+				<tr>
+					<td style="text-align: right;"><input type="checkbox"
+						value="checked" name="condition" /></td>
+					<td>Agree terms & conditions</td>
+				</tr>
+
+				<tr>
+					<td></td>
+					<td>
+						<button type="submit">Submit</button>
+						<button type="reset">Reset</button>
+					</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+</body>
+</html>
+```
+
+**index.html**
+```html
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<h1>My First Servlet</h1>
+	<h1><a href="MyFirstServlet">My First Servlet</a></h1>
+	<h1><a href="MyServletUsingGenericServlet">MyServletUsingGenericServlet</a></h1>
+	<h1><a href="MyServletUsingHttpServlet">MyServletUsingHttpServlet</a></h1>
+	<h1>Go to Form Section:- <a href="form.html">Form Page</a></h1>
+</body>
+</html>
+```
+
+**web.xml**
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="https://jakarta.ee/xml/ns/jakartaee"
+	xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
+	id="WebApp_ID" version="6.0">
+	<display-name>ServletLearning</display-name>
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+		<welcome-file>index.jsp</welcome-file>
+		<welcome-file>index.htm</welcome-file>
+		<welcome-file>default.html</welcome-file>
+		<welcome-file>default.jsp</welcome-file>
+		<welcome-file>default.htm</welcome-file>
+	</welcome-file-list>
+
+	<!--Servlet Declaration -->
+
+	<!-- Servlet Declaration of MyFirstServlet -->
+	<servlet>
+		<servlet-name>MyFirstServlet</servlet-name>
+		<!-- You need to provide FULL QUALIFIED NAME i.e package & class name -->
+		<servlet-class>com.learningservlet.servlets.MyFirstServlet</servlet-class>
+	</servlet>
+
+	<!-- Servlet Declaration of MyServletUsingGenericServlet -->
+	<servlet>
+		<servlet-name>MyServletUsingGenericServlet</servlet-name>
+		<servlet-class>com.learningservlet.servlets.MyServletUsingGenericServlet</servlet-class>
+	</servlet>
+
+	<!-- Servlet Declaration of MyServletUsingHttpServlet -->
+	<servlet>
+		<servlet-name>MyServletUsingHttpServlet</servlet-name>
+		<servlet-class>com.learningservlet.servlets.MyServletUsingHttpServlet</servlet-class>
+	</servlet>
+	
+	<!-- Servlet Declaration of RegisterServlet -->
+	<servlet>
+		<servlet-name>RegisterServlet</servlet-name>
+		<servlet-class>com.learningservlet.servlets.RegisterServlet</servlet-class>
+	</servlet>
+
+	<!-- ================================================================================== -->
+
+	<!-- Mapping -->
+
+	<!-- Mapping of MyFirstServlet -->
+	<!-- This is an important tag because here we define our url pattern through 
+		which we will get our servlet -->
+	<servlet-mapping>
+		<servlet-name>MyFirstServlet</servlet-name>
+		<url-pattern>/MyFirstServlet</url-pattern>
+	</servlet-mapping>
+
+	<!-- Mapping of MyServletUsingGenericServlet -->
+	<servlet-mapping>
+		<servlet-name>MyServletUsingGenericServlet</servlet-name>
+		<url-pattern>/MyServletUsingGenericServlet</url-pattern>
+	</servlet-mapping>
+
+	<!-- Mapping of MyServletUsingHttpServlet -->
+	<servlet-mapping>
+		<servlet-name>MyServletUsingHttpServlet</servlet-name>
+		<url-pattern>/MyServletUsingHttpServlet</url-pattern>
+	</servlet-mapping>
+	
+	<!-- Mapping of RegisterServlet  -->
+	<servlet-mapping>
+		<servlet-name>RegisterServlet</servlet-name>
+		<url-pattern>/RegisterServlet</url-pattern>
+	</servlet-mapping>
+</web-app>
+```
