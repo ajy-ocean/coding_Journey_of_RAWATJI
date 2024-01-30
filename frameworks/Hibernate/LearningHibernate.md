@@ -13,6 +13,7 @@
 * [ManyToManyMapping](#manytomanymapping)
 * [Fetch Type:- Lazy & Eager Loading](#fetch-type)
 * [Hibernate Object State || Persistent Lifecycle](#hibernate-object-state--persistent-lifecycle)
+* [HQL - Hibernate Query Language](#hql--hibernate-query-language)
 
 ### What is Hibernate Framework?
 * Hibernate is a java framework that simplifies the developement of java application to interact with the database.
@@ -1897,3 +1898,78 @@ public class HibernateObjectStates {
 }
 ```
 
+### HQL | Hibernate Query Language
+
+![Hibernate Query Language](/frameworks/Hibernate/img/Hql.png)
+
+**HibernateQueryLanguageLearning.java (Main Class)**
+```java
+package com.learninghibernate.hql;
+
+import java.util.List;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.query.Query;
+
+import com.learninghibernate.Student;
+
+public class HibernateQueryLanguageLearning {
+	
+	public static void main(String[] args) {
+		Configuration configuration = new Configuration();	
+		configuration.configure("hibernate.cfg.xml");
+		SessionFactory sessionFactory = configuration.buildSessionFactory();
+		
+		Session session = sessionFactory.openSession();
+		
+		// Firing HQL query
+		// Syntax
+		String hqlQuery = "from Student";
+		Query query = session.createQuery(hqlQuery);
+		
+		/* Unique result :- If we are expecting a single result */
+		//query.uniqueResult();
+		
+		/* List Result :- If we are expecting multiple results */
+		List<Student> listOfStudents = query.list();
+		
+		System.out.println("Student Names");
+		System.out.println("==============");
+		for(Student student : listOfStudents) {
+			System.out.println(student.getName());
+		}
+		
+		// Here, city is the instance variable name in Student class not the table name
+		String hqlWhereQuery = "from Student where city = 'kyoto'";
+		Query whereQuery = session.createQuery(hqlWhereQuery);
+		
+		List<Student> listOfStudentInKyoto = whereQuery.list();
+		
+		System.out.println("Students who live in Kyoto");
+		System.out.println("=======================");
+		for(Student kyotoStudent : listOfStudentInKyoto) {
+			System.out.println(kyotoStudent.getName()+" : "+kyotoStudent.getCity()+" : "+kyotoStudent.getCertificate().getCourse());
+		}
+		
+		// Dynamic Query and alias to set parameters
+		// Here, =:city is like a temporary variable that we can assign later like we have used below
+		String hqlDynamicQuery = "from Student s where s.city =:city and s.name =:name";
+		Query dynamicQuery = session.createQuery(hqlDynamicQuery);
+		dynamicQuery.setParameter("city","milf city");
+		dynamicQuery.setParameter("name", "Ajay");
+		
+		List<Student> listOfStudentsInOsaka = dynamicQuery.list();
+		
+		System.out.println("Student who live in Milf City");
+		System.out.println("=======================");
+		for(Student milfCityStudent : listOfStudentsInOsaka) {
+			System.out.println(milfCityStudent.getName()+" : "+milfCityStudent.getCity()+" : "+milfCityStudent.getCertificate().getCourse());
+		}
+		
+		session.close();
+		sessionFactory.close();
+	}
+}
+```
