@@ -8,6 +8,8 @@
 * [Spring Modules](#spring-modules)
 * [Spring IoC Container](#spring-ioc-inversion-of-control-container)
     * [ApplicationContext](#applicationcontext)
+* [Ways Of Injecting Dependencies](#ways-of-injecting-dependencies)
+    * [Data Types (Dependencies)](#data-types-dependencies)
 
 ### What is Spring FrameWork ?
 * Spring is a Dependency Injection framework to make java application loosely coupled. Spring framework is also called as **FRAMEWORK OF FRAMEWORKS**.
@@ -51,16 +53,10 @@
 
 ![ApplicationContext](/frameworks/Spring/images/ApplicationContext.png)
 
+### Ways Of Injecting Dependencies
 
+![ways of injecting dependencies](/frameworks/Spring/images/waysOfInjectingDependencies.png)
 
+### Data Types (Dependencies)
 
-
-
-
-
-
-
-
-
-
-
+![Data types in dependencies](/frameworks/Spring/images/datatypes_dependencies.png)
