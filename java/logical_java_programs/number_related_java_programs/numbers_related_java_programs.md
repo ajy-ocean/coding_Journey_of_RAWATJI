@@ -9,6 +9,8 @@
 * [Write a Java Program for the Fibonacci series](#6-write-a-java-program-for-the-fibonacci-series)
 * [Write a Java Program to find the Largest, second-largest, smallest & second-smallest number in an array](#7-write-a-java-program-to-find-the-largest-second-largest-smallest--second-smallest-number-in-an-array)
 * [Write a Java Program to find whether a number is Armstrong or not](#8-write-a-java-program-to-find-whether-a-number-is-armstrong-or-not)
+* [Write a Java program to sort numbers in Ascending Order](#9-write-a-java-program-to-sort-number-in-ascending-order)
+* [Write a Java program to sort numbers in Descending Order](#10-write-a-java-program-to-sort-numbers-in-descending-order)
 
 
 #### 1. Write a Java Program to reverse a number.
@@ -251,6 +253,95 @@ public class RandomPractice {
 
 #### 7. Write a Java Program to find the Largest, second-largest, smallest & second-smallest number in an array.
 
+### Largest Number (Refer this to find largest number)
+
+**MaximumNumber.java**
+
+```java
+package com.practice.NumberProblems;
+
+import java.util.Scanner;
+
+public class MaximumNumber {
+
+	public static int findMax(int[] numbers, int total) {
+
+		// Sorting the given array in ascending order 
+		for (int i = 0; i < numbers.length; i++) {
+
+			for (int j = i + 1; j < numbers.length; j++) {
+
+				if (numbers[i] > numbers[j]) {
+					// Swapping without using third variable
+					numbers[i] = numbers[i] + numbers[j];
+					numbers[j] = numbers[i] - numbers[j];
+					numbers[i] = numbers[i] - numbers[j];
+				}
+			}
+		}
+		return numbers[total - 1];
+	}
+
+	public static void main(String[] args) {
+
+		Scanner scanner = new Scanner(System.in);
+		int[] numbers = new int[5];
+		System.out.println("Enter 5 numbers");
+		for (int i = 0; i < numbers.length; i++) {
+			numbers[i] = scanner.nextInt();
+		}
+
+		System.out.println("Largest Number is :- " + MaximumNumber.findMax(numbers, numbers.length));
+
+	}
+}
+```
+
+### Smallest Number (Refer this to find smallest number)
+
+**MinmumNumber.java**
+
+```java
+package com.practice.NumberProblems;
+
+import java.util.Scanner;
+
+public class MinmumNumber {
+
+	public static int findMin(int[] numbers, int total) {
+
+		// Sorting the given array in descending order
+		for (int i = 0; i < numbers.length; i++) {
+
+			for (int j = i + 1; j < numbers.length; j++) {
+				
+				// Swapping without using third variable
+				if(numbers[i] < numbers[j]) {
+					numbers[i] = numbers[i] + numbers[j];
+					numbers[j] = numbers[i] - numbers[j];
+					numbers[i] = numbers[i] - numbers[j];
+				}
+			}
+		}
+
+		return numbers[total - 1];
+	}
+
+	public static void main(String[] args) {
+		Scanner scanner = new Scanner(System.in);
+		int[] numbers = new int[5];
+		System.out.println("Enter 5 numbers");
+		for (int i = 0; i < numbers.length; i++) {
+			numbers[i] = scanner.nextInt();
+		}
+
+		System.out.println("Smallest Number is :- " + MinmumNumber.findMin(numbers, numbers.length));
+	}
+}
+```
+
+### Second Largest & Second Smallest(Refer this to find second largest & second smallest)
+
 ```java
 package practice;
 
@@ -340,6 +431,124 @@ public class RandomPractice {
 		}else {
 			System.out.println(temp + " is NOT an ARMSTRONG NUMBER");
 		}
+	}
+}
+```
+
+#### 9. Write a Java program to sort number in Ascending Order
+
+**AscNumberSort.java**
+
+```java
+package com.practice.NumberProblems;
+
+import java.util.Scanner;
+
+public class AscNumberSort {
+
+	public static void ascendingSort() {
+
+		// Array Creation
+		int[] numbers = new int[5];
+
+		int temp;
+
+		// User Input
+		Scanner scanner = new Scanner(System.in);
+		System.out.println("Enter 5 numbers");
+		for (int i = 0; i < numbers.length; i++) {
+			numbers[i] = scanner.nextInt();
+		}
+
+		// Sorting Array in Ascending Order
+		for (int i = 0; i < numbers.length; i++) {
+
+			for (int j = i + 1; j < numbers.length; j++) {
+
+				if (numbers[i] > numbers[j]) {
+					// Swapping using third variable
+					temp = numbers[i];
+					numbers[i] = numbers[j];
+					numbers[j] = temp;
+
+					// Swapping without using third variable
+//					numbers[i] = numbers[i] + numbers[j];
+//					numbers[j] = numbers[i] - numbers[j];
+//					numbers[i] = numbers[i] - numbers[j];
+
+				}
+			}
+		}
+
+		System.out.println("Numbers in Ascending Order");
+		// Printing values
+		for (int number : numbers) {
+			System.out.print(number + " ");
+		}
+
+	}
+
+	public static void main(String[] args) {
+		AscNumberSort.ascendingSort();
+	}
+}
+```
+
+#### 10. Write a Java Program to sort numbers in Descending Order
+
+**DescNumberSort.java**
+
+```java
+package com.practice.NumberProblems;
+
+import java.util.Scanner;
+
+public class DescNumberSort {
+
+	public static void descendingSort() {
+
+		// Array Creation
+		int[] numbers = new int[5];
+
+		int temp;
+
+		// User Input
+		Scanner scanner = new Scanner(System.in);
+		System.out.println("Enter 5 numbers");
+		for (int i = 0; i < numbers.length; i++) {
+			numbers[i] = scanner.nextInt();
+		}
+
+		// Sorting Array in Descending Order
+		for (int i = 0; i < numbers.length; i++) {
+
+			for (int j = i + 1; j < numbers.length; j++) {
+
+				if (numbers[i] < numbers[j]) {
+					// Swapping using third variable
+					temp = numbers[j];
+					numbers[j] = numbers[i];
+					numbers[i] = temp;
+					
+					// Swapping without using third variable
+					
+//					numbers[i] = numbers[i] + numbers[j];
+//					numbers[j] = numbers[i] - numbers[j];
+//					numbers[i] = numbers[i] - numbers[j];
+				}
+			}
+		}
+
+		System.out.println("Numbers in Ascending Order");
+		// Printing values
+		for (int number : numbers) {
+			System.out.print(number + " ");
+		}
+
+	}
+
+	public static void main(String[] args) {
+		DescNumberSort.descendingSort();
 	}
 }
 ```
