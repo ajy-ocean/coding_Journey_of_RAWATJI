@@ -11,6 +11,7 @@
 * [Write a Java Program to find whether a number is Armstrong or not](#8-write-a-java-program-to-find-whether-a-number-is-armstrong-or-not)
 * [Write a Java program to sort numbers in Ascending Order](#9-write-a-java-program-to-sort-number-in-ascending-order)
 * [Write a Java program to sort numbers in Descending Order](#10-write-a-java-program-to-sort-numbers-in-descending-order)
+* [Write a Java Program to find the Factorial of a give number](#11-write-a-java-program-to-find-factorial-of-a-given-number)
 
 
 #### 1. Write a Java Program to reverse a number.
@@ -255,8 +256,6 @@ public class RandomPractice {
 
 ### Largest Number (Refer this to find largest number)
 
-**MaximumNumber.java**
-
 ```java
 package com.practice.NumberProblems;
 
@@ -298,8 +297,6 @@ public class MaximumNumber {
 ```
 
 ### Smallest Number (Refer this to find smallest number)
-
-**MinmumNumber.java**
 
 ```java
 package com.practice.NumberProblems;
@@ -437,8 +434,6 @@ public class RandomPractice {
 
 #### 9. Write a Java program to sort number in Ascending Order
 
-**AscNumberSort.java**
-
 ```java
 package com.practice.NumberProblems;
 
@@ -496,8 +491,6 @@ public class AscNumberSort {
 
 #### 10. Write a Java Program to sort numbers in Descending Order
 
-**DescNumberSort.java**
-
 ```java
 package com.practice.NumberProblems;
 
@@ -551,4 +544,44 @@ public class DescNumberSort {
 		DescNumberSort.descendingSort();
 	}
 }
+```
+
+#### 11. Write a Java program to find factorial of a given number
+
+* Method 1 :- Non-Recursive Method
+
+```java
+package com.practice.NumberProblems;
+
+public class FactorialOfNumber {
+
+	public static void main(String[] args) {
+		System.out.println("Factorial Of 6! is " + findFact(6));
+	}
+
+	public static int findFact(int number) {
+		int factorial = 1;
+		for (int i = 1; i <= number; i++) {
+			factorial *= i;
+		}
+		return factorial;
+	}
+}
+```
+
+* Method 2 :- Recursive Method
+
+```java
+	public static void main(String[] args) {
+		System.out.println("The factorial of the 5! is " + findFactUsingRecursiveMethod(5));
+	}
+
+	public static int findFactUsingRecursiveMethod(int number) {
+
+		if (number == 0 || number == 1) {
+			return 1;
+		} else {
+			return number * findFactUsingRecursiveMethod(number - 1);
+		}
+	}
 ```
