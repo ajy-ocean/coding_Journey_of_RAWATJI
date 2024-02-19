@@ -42,6 +42,37 @@ public class RandomPractice {
 	}
 }
 ```
+
+* Method 1, Java program which reverses negative number
+
+```java
+package com.practice.timepass;
+
+import java.util.Scanner;
+
+public class Timepass {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter a number");
+        int number = scanner.nextInt();
+
+        System.out.println("Number Before Reverse Operation: " + number);
+
+        int reverse;
+        if (number >= 0) {
+            // If the number is non-negative, reverse it as usual
+            reverse = Integer.parseInt(new StringBuilder().append(number).reverse().toString());
+        } else {
+            // If the number is negative, reverse the absolute value and add the negative sign back
+            reverse = -Integer.parseInt(new StringBuilder().append(Math.abs(number)).reverse().toString());
+        }
+
+        System.out.println("Number After Reverse Operation: " + reverse);
+    }
+}
+```
+
 * Method 2
 
 ```java
