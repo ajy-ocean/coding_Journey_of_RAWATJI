@@ -399,6 +399,10 @@ public class RandomPractice {
 
 #### 8. Write a Java Program to find whether a number is Armstrong or not.
 
+#### Note :- There is no two-digit Armstrong number.
+
+* Method - 1
+
 ```java
 package practice;
 
@@ -428,6 +432,39 @@ public class RandomPractice {
 		}else {
 			System.out.println(temp + " is NOT an ARMSTRONG NUMBER");
 		}
+	}
+}
+```
+
+* Method - 2
+
+```java
+package com.practice.NumberProblems;
+
+import java.util.Scanner;
+
+public class ArmstrongCheck {
+
+	public static void main(String[] args) {
+		Scanner scanner = new Scanner(System.in);
+		System.out.print("Enter a number: ");
+		int number = scanner.nextInt();
+
+		if (isArmstrong(number)) {
+			System.out.println(number + " is an Armstrong number.");
+		} else {
+			System.out.println(number + " is not an Armstrong number.");
+		}
+	}
+
+	// Function to check if a number is an Armstrong number using Stream API
+	private static boolean isArmstrong(int num) {
+		int totalDigits = String.valueOf(num).length();
+
+		int sum = String.valueOf(num).chars() // Convert the number to IntStream of its digits
+				.map(digit -> (int) Math.pow(Character.getNumericValue(digit), totalDigits)).sum();
+
+		return sum == num;
 	}
 }
 ```
