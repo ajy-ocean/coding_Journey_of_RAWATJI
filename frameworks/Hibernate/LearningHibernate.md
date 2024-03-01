@@ -1,5 +1,5 @@
 # Hibernate Framework
-
+ 
 #### INDEX
 * [What is Hibernate FrameWork](#what-is-hibernate-framework)
 * [Hibernate Configuration For Eclipse](#hibernate-configuration-for-eclipse)
@@ -14,6 +14,18 @@
 * [Fetch Type:- Lazy & Eager Loading](#fetch-type)
 * [Hibernate Object State || Persistent Lifecycle](#hibernate-object-state--persistent-lifecycle)
 * [HQL - Hibernate Query Language](#hql--hibernate-query-language)
+	* [HQL - Delete Query](#hql--delete-query)
+	* [HQL - Update Query](#hql--update-query-in-hibernate)
+	* [HQL - Join Query](#hql--join-query-in-hibernate)
+	* [HQL - Pagination](#pagination)
+* [SQL Query In Hibernate](#sql-query-in-hibernate)
+* [Cascading](#cascading)
+* [Caching](#caching)
+	* [Types Of Hibernate Caching](#types-of-hibernate-caching)
+	* [First Level Caching](#first-level-caching)
+	* [Second Level Caching](#second-level-caching)
+* [Mapping Using XML file](#mapping-using-xml-file)
+* [Hibernate Criteria API | Criteria Restrictions](#hibernate-criteria-api--criteria-restrictions)
 
 ### What is Hibernate Framework?
 * Hibernate is a java framework that simplifies the developement of java application to interact with the database.
@@ -1970,6 +1982,933 @@ public class HibernateQueryLanguageLearning {
 		
 		session.close();
 		sessionFactory.close();
+	}
+}
+```
+
+### HQL:- Delete Query
+
+```java
+package com.learninghibernate.hql;
+
+import java.util.List;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.query.Query;
+
+import com.learninghibernate.Student;
+
+public class HibernateQueryLanguageLearning {
+
+	public static void main(String[] args) {
+		Configuration configuration = new Configuration();
+		configuration.configure("hibernate.cfg.xml");
+		SessionFactory sessionFactory = configuration.buildSessionFactory();
+
+		Session session = sessionFactory.openSession();
+
+		// Firing HQL query
+		// Syntax
+		String hqlQuery = "from Student";
+		Query query = session.createQuery(hqlQuery);
+
+		/* Unique result :- If we are expecting a single result */
+		// query.uniqueResult();
+
+		/* List Result :- If we are expecting multiple results */
+		List<Student> listOfStudents = query.list();
+
+		System.out.println("Student Names");
+		System.out.println("==============");
+		for (Student student : listOfStudents) {
+			System.out.println(student.getName());
+		}
+
+		// Here, city is the instance variable name in Student class not the table name
+		String hqlWhereQuery = "from Student where city = 'kyoto'";
+		Query whereQuery = session.createQuery(hqlWhereQuery);
+
+		List<Student> listOfStudentInKyoto = whereQuery.list();
+
+		System.out.println("Students who live in Kyoto");
+		System.out.println("=======================");
+		for (Student kyotoStudent : listOfStudentInKyoto) {
+			System.out.println(kyotoStudent.getName() + " : " + kyotoStudent.getCity() + " : "
+					+ kyotoStudent.getCertificate().getCourse());
+		}
+
+		// Dynamic Query and alias to set parameters
+		// Here, =:city is like a temporary variable that we can assign later like we
+		// have used below
+		String hqlDynamicQuery = "from Student s where s.city =:city and s.name =:name";
+		Query dynamicQuery = session.createQuery(hqlDynamicQuery);
+		dynamicQuery.setParameter("city", "milf city");
+		dynamicQuery.setParameter("name", "Ajay");
+
+		List<Student> listOfStudentsInOsaka = dynamicQuery.list();
+
+		System.out.println("Student who live in Milf City");
+		System.out.println("=======================");
+		for (Student milfCityStudent : listOfStudentsInOsaka) {
+			System.out.println(milfCityStudent.getName() + " : " + milfCityStudent.getCity() + " : "
+					+ milfCityStudent.getCertificate().getCourse());
+		}
+		
+		System.out.println("-------------------------------------------------------");
+		System.out.println("-------------------------------------------------------");
+		
+        // Delete Query in Hibernate
+		Transaction transac = session.beginTransaction();
+		Query deleteQuery = session.createQuery("delete from Student s where s.city=:c");
+		deleteQuery.setParameter("c", "Kyoto");
+		int noOfEntritesdeleted =  deleteQuery.executeUpdate();
+		System.out.println("No Of Entries Deleted " + noOfEntritesdeleted);
+		transac.commit();
+
+		session.close();
+		sessionFactory.close();
+	}
+}
+```
+
+### HQL:- Update Query In Hibernate
+
+```java
+package com.learninghibernate.hql;
+
+import java.util.List;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.query.Query;
+
+import com.learninghibernate.Student;
+
+public class HibernateQueryLanguageLearning {
+
+	public static void main(String[] args) {
+		Configuration configuration = new Configuration();
+		configuration.configure("hibernate.cfg.xml");
+		SessionFactory sessionFactory = configuration.buildSessionFactory();
+
+		Session session = sessionFactory.openSession();
+
+		// Firing HQL query
+		// Syntax
+		String hqlQuery = "from Student";
+		Query query = session.createQuery(hqlQuery);
+
+		/* Unique result :- If we are expecting a single result */
+		// query.uniqueResult();
+
+		/* List Result :- If we are expecting multiple results */
+		List<Student> listOfStudents = query.list();
+
+		System.out.println("Student Names");
+		System.out.println("==============");
+		for (Student student : listOfStudents) {
+			System.out.println(student.getName());
+		}
+
+		// Here, city is the instance variable name in Student class not the table name
+		String hqlWhereQuery = "from Student where city = 'kyoto'";
+		Query whereQuery = session.createQuery(hqlWhereQuery);
+
+		List<Student> listOfStudentInKyoto = whereQuery.list();
+
+		System.out.println("Students who live in Kyoto");
+		System.out.println("=======================");
+		for (Student kyotoStudent : listOfStudentInKyoto) {
+			System.out.println(kyotoStudent.getName() + " : " + kyotoStudent.getCity() + " : "
+					+ kyotoStudent.getCertificate().getCourse());
+		}
+
+		// Dynamic Query and alias to set parameters
+		// Here, =:city is like a temporary variable that we can assign later like we
+		// have used below
+		String hqlDynamicQuery = "from Student s where s.city =:city and s.name =:name";
+		Query dynamicQuery = session.createQuery(hqlDynamicQuery);
+		dynamicQuery.setParameter("city", "milf city");
+		dynamicQuery.setParameter("name", "Ajay");
+
+		List<Student> listOfStudentsInOsaka = dynamicQuery.list();
+
+		System.out.println("Student who live in Milf City");
+		System.out.println("=======================");
+		for (Student milfCityStudent : listOfStudentsInOsaka) {
+			System.out.println(milfCityStudent.getName() + " : " + milfCityStudent.getCity() + " : "
+					+ milfCityStudent.getCertificate().getCourse());
+		}
+		
+		System.out.println("-------------------------------------------------------");
+		System.out.println("-------------------------------------------------------");
+		
+        // Delete Query in Hibernate
+//		Transaction transac = session.beginTransaction();
+//		Query deleteQuery = session.createQuery("delete from Student s where s.city=:c");
+//		deleteQuery.setParameter("c", "Kyoto");
+//		int noOfEntritesdeleted =  deleteQuery.executeUpdate();
+//		System.out.println("No Of Entries Deleted " + noOfEntritesdeleted);
+//		transac.commit();		
+		
+		// Update Query in Hibernate
+		Transaction transac = session.beginTransaction();
+		Query updateQuery = session.createQuery("update Student set city=:c where name=:n");
+		updateQuery.setParameter("c", "Summerville");
+		updateQuery.setParameter("n", "Ajay");
+		int noOfEntriedUpdated = updateQuery.executeUpdate();
+		System.out.println("No Of Entries Update " + noOfEntriedUpdated);
+		transac.commit();
+
+		session.close();
+		sessionFactory.close();
+	}
+}
+```
+
+### HQL:- Join Query In Hibernate
+
+```java
+package com.learninghibernate.hql;
+
+import java.util.Arrays;
+import java.util.List;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.query.Query;
+
+import com.learninghibernate.Student;
+
+public class HibernateQueryLanguageLearning {
+
+	public static void main(String[] args) {
+		Configuration configuration = new Configuration();
+		configuration.configure("hibernate.cfg.xml");
+		SessionFactory sessionFactory = configuration.buildSessionFactory();
+
+		Session session = sessionFactory.openSession();
+
+		// Firing HQL query
+		// Syntax
+		String hqlQuery = "from Student";
+		Query query = session.createQuery(hqlQuery);
+
+		/* Unique result :- If we are expecting a single result */
+		// query.uniqueResult();
+
+		/* List Result :- If we are expecting multiple results */
+		List<Student> listOfStudents = query.list();
+
+		System.out.println("Student Names");
+		System.out.println("==============");
+		for (Student student : listOfStudents) {
+			System.out.println(student.getName());
+		}
+
+		// Here, city is the instance variable name in Student class not the table name
+		String hqlWhereQuery = "from Student where city = 'kyoto'";
+		Query whereQuery = session.createQuery(hqlWhereQuery);
+
+		List<Student> listOfStudentInKyoto = whereQuery.list();
+
+		System.out.println("Students who live in Kyoto");
+		System.out.println("=======================");
+		for (Student kyotoStudent : listOfStudentInKyoto) {
+			System.out.println(kyotoStudent.getName() + " : " + kyotoStudent.getCity() + " : "
+					+ kyotoStudent.getCertificate().getCourse());
+		}
+
+		// Dynamic Query and alias to set parameters
+		// Here, =:city is like a temporary variable that we can assign later like we
+		// have used below
+		String hqlDynamicQuery = "from Student s where s.city =:city and s.name =:name";
+		Query dynamicQuery = session.createQuery(hqlDynamicQuery);
+		dynamicQuery.setParameter("city", "milf city");
+		dynamicQuery.setParameter("name", "Ajay");
+
+		List<Student> listOfStudentsInOsaka = dynamicQuery.list();
+
+		System.out.println("Student who live in Milf City");
+		System.out.println("=======================");
+		for (Student milfCityStudent : listOfStudentsInOsaka) {
+			System.out.println(milfCityStudent.getName() + " : " + milfCityStudent.getCity() + " : "
+					+ milfCityStudent.getCertificate().getCourse());
+		}
+
+		System.out.println("-------------------------------------------------------");
+		System.out.println("-------------------------------------------------------");
+
+		// Delete Query in Hibernate
+//		Transaction transac = session.beginTransaction();
+//		Query deleteQuery = session.createQuery("delete from Student s where s.city=:c");
+//		deleteQuery.setParameter("c", "Kyoto");
+//		int noOfEntritesdeleted =  deleteQuery.executeUpdate();
+//		System.out.println("No Of Entries Deleted " + noOfEntritesdeleted);
+//		transac.commit();
+
+		// Update Query in Hibernate
+//		Transaction transac = session.beginTransaction();
+//		Query updateQuery = session.createQuery("update Student set city=:c where name=:n");
+//		updateQuery.setParameter("c", "Summerville");
+//		updateQuery.setParameter("n", "Ajay");
+//		int noOfEntriedUpdated = updateQuery.executeUpdate();
+//		System.out.println("No Of Entries Update " + noOfEntriedUpdated);
+//		transac.commit();
+		
+		// Joins in Hibernate
+		Transaction transact = session.beginTransaction();
+		Query joinQuery = session.createQuery("select q.question, q.questionId, a.answer from Question as q INNER JOIN q.answers as a");
+		
+		List<Object[]> listOfJoinResult = joinQuery.getResultList();
+		for(Object[] result : listOfJoinResult) {
+			System.out.println(Arrays.toString(result));
+		}
+		
+		transact.commit();
+
+		session.close();
+		sessionFactory.close();
+	}
+}
+```
+
+### Pagination
+![HQL Pagination](/frameworks/Hibernate/img/HqlPagination.png)
+
+**pagination.java**
+
+```java
+package com.learninghibernate.pagination;
+
+import java.util.List;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.query.Query;
+
+import com.learninghibernate.Student;
+
+public class HQLPagination {
+
+	public static void main(String[] args) {
+
+		SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
+		Session session = sessionFactory.openSession();
+
+		Query queryObject  = session.createQuery("from Student");
+		// Implementing Pagination
+		
+		// This is shows from which index which want to start
+		// 0 to 4
+		queryObject.setFirstResult(0);
+		
+		// This is shows maximum result (page size)
+		queryObject.setMaxResults(10);
+		
+		List<Student> listOfStudents = queryObject.list();
+		
+		for(Student student : listOfStudents) {
+			System.out.println(student.getId()+ " : " +student.getName() + " : " + student.getCity());
+		}
+		
+		session.close();
+		sessionFactory.close();
+	}
+}
+```
+
+### SQL Query In Hibernate
+
+**SqlUsingHibernate.java**
+
+```java
+package com.learninghibernate.sqlquery;
+
+import java.util.Arrays;
+import java.util.List;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.query.NativeQuery;
+
+import com.learninghibernate.Student;
+
+public class SqlUsingHibernate {
+
+    public static void main(String[] args) {
+        SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
+        Session session = sessionFactory.openSession();
+        
+        // This is SQL query
+        String query = "select * from Student";
+        NativeQuery<Object[]> ng = session.createNativeQuery(query);
+        List<Object[]> list = ng.list();
+        
+        for (Object[] student : list) {
+            System.out.println(student[4]+ " : " + student[1]);
+        }
+        
+        session.close();
+        sessionFactory.close();
+    }
+}
+```
+
+### Cascading
+
+**HibernateCascading.java**
+
+```java
+package com.learninghibernate.cascading;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
+
+import com.learninghibernate.mapping.Answer;
+import com.learninghibernate.mapping.Question;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToMany;
+
+public class HibernateCascading {
+
+	public static void main(String[] args) {
+		
+		SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
+		Session session = sessionFactory.openSession();
+		
+		// Hibernate Cascading
+		/* 
+		 * Apply This On Your Entity In My Case I Will Apply This On Question Class
+		 * @OneToMany(mappedBy = "question", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+		 */
+		Question firstQuestion = new Question();
+		firstQuestion.setQuestionId(567);
+		firstQuestion.setQuestion("What is hibernate cascading");
+		
+		Answer firstAnswer = new Answer(234, "In hibernate it is an important concept");
+		Answer secondAnswer = new Answer(235, "Cascading can be a very useful feature");
+		Answer thirdAnswer = new Answer(236, "Only cascade operations that you need");
+		
+		List<Answer> listOfAnswers = new ArrayList<>();
+		listOfAnswers.add(firstAnswer);
+		listOfAnswers.add(secondAnswer);
+		listOfAnswers.add(thirdAnswer);
+		
+		firstQuestion.setAnswers(listOfAnswers);
+		Transaction transaction = session.beginTransaction();
+	
+		session.save(firstQuestion);
+		transaction.commit();
+		session.close();
+		sessionFactory.close();
+	}
+}
+```
+
+**Question.java**
+```java
+package com.learninghibernate.mapping;
+
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+
+@Entity
+public class Question {
+
+	@Id
+	@Column(name = "question_id")
+	private int questionId;
+
+	private String question;
+	
+	// Fetch Type:- Eager loading default is lazy loading
+	//@OneToMany(mappedBy = "question", fetch = FetchType.EAGER)
+	
+	// Explicit Lazy loading
+	@OneToMany(mappedBy = "question", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<Answer> answers;
+
+	public Question() {
+		super();
+	}
+
+	public Question(int questionId, String question, List<Answer> answers) {
+		super();
+		this.questionId = questionId;
+		this.question = question;
+		this.answers = answers;
+	}
+
+	public int getQuestionId() {
+		return questionId;
+	}
+
+	public void setQuestionId(int questionId) {
+		this.questionId = questionId;
+	}
+
+	public String getQuestion() {
+		return question;
+	}
+
+	public void setQuestion(String question) {
+		this.question = question;
+	}
+
+	public List<Answer> getAnswers() {
+		return answers;
+	}
+
+	public void setAnswers(List<Answer> answers) {
+		this.answers = answers;
+	}
+}
+```
+
+### Caching
+![Caching In Hibernate](/frameworks/Hibernate/img/HibernateCaching.png)
+
+### Types Of Hibernate Caching
+![Types Of Hibernate Caching](/frameworks/Hibernate/img/TypesOfHibernateCaching.png)
+
+### First Level Caching
+
+**FirstLevelHibernateCaching.java**
+
+```java
+package com.learninghibernate.caching;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
+
+import com.learninghibernate.Student;
+
+public class FirstLevelHibernateCaching {
+	
+	public static void main(String[] args) {
+	
+		SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
+		Session session = sessionFactory.openSession();
+		
+		// First Level Caching BY DEFAULT ENABLE
+		Student student = session.get(Student.class, 2);
+		System.out.println(student);
+		
+		System.out.println("Working on Something.............");
+		/* 
+		 * Here, in the console you can see that hibernate 
+		 * has first fired the query for the object
+		 * but again if we try to access the same object
+		 * so hibernate will the return the object from it's cache memory
+		 * In console you can see that the query has been fired only once
+		*/
+		Student student2 = session.get(Student.class, 2);
+		System.out.println(student2);
+		
+		// This method shows that Student object is avaible in the cache memory
+		System.out.println(session.contains(student2));
+		
+		session.close();
+		sessionFactory.close();
+		
+	}
+}
+```
+
+### Second Level Caching
+#### BELOW CODE HAVE ERRORS RESOLVE THE ERRORS TO SEE THE RESULTS OR WATCH DURGESH VIDEO OF HIBERNATE SERIES.
+
+**SecondLevelCaching.java**
+
+```java
+package com.learninghibernate.caching;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
+
+import com.learninghibernate.Student;
+
+public class SecondLevelCaching {
+    
+    public static void main(String[] args) {
+    	
+        SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
+        Session firstSession = sessionFactory.openSession();
+        
+        // First
+        Student studentFirst = firstSession.get(Student.class, 2);
+        System.out.println(studentFirst);
+        firstSession.close();
+        
+        Session secondSession = sessionFactory.openSession();
+        // Second
+        Student studentSecond = secondSession.get(Student.class, 2);
+        System.out.println(studentSecond);
+        secondSession.close();
+        
+        sessionFactory.close();
+    }
+}
+```
+
+**pom.xml**
+
+```xml
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.learningHibernate</groupId>
+	<artifactId>HibernateLearning</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<name>HibernateLearning</name>
+	<url>http://maven.apache.org</url>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<dependencies>
+
+		<!-- Hibernate Maven Dependency -->
+		<!-- https://mvnrepository.com/artifact/org.hibernate.orm/hibernate-core -->
+		<dependency>
+			<groupId>org.hibernate.orm</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>6.3.0.Final</version>
+		</dependency>
+
+		<!-- Mysql Maven Dependency -->
+		<!-- https://mvnrepository.com/artifact/com.mysql/mysql-connector-j -->
+		<dependency>
+			<groupId>com.mysql</groupId>
+			<artifactId>mysql-connector-j</artifactId>
+			<version>8.0.33</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/net.sf.ehcache/ehcache -->
+		<dependency>
+			<groupId>net.sf.ehcache</groupId>
+			<artifactId>ehcache</artifactId>
+			<version>2.10.9.2</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-ehcache -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-ehcache</artifactId>
+			<version>5.6.15.Final</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+</project>
+```
+
+**hibernate.cfg.xml**
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+	"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+	<session-factory>
+		<!-- We have to mention which Driver are we using here we are using MySql -->
+		<property name="connection.driver_class">com.mysql.cj.jdbc.Driver</property>
+
+		<!-- Mention your database url -->
+		<property name="connection.url">jdbc:mysql://localhost:3306/myHiber</property>
+
+		<!-- Provide your database username and password -->
+		<property name="connection.username">ocean</property>
+		<property name="connection.password">ocean@root</property>
+
+		<!-- dialect is a property which is specific for the database you are using 
+			here since I'm using MySql -->
+		<!-- If you are using older version of version of hibernate -->
+		<!-- <property name="dialect">org.hibernate.dialect.MySQLDialect</property> -->
+		<!-- But if your are using latest version of hibernate then you need to 
+			add MySQL8Dialect -->
+		<property name="dialect">org.hibernate.dialect.MySQL8Dialect</property>
+
+		<!-- This property of hibernate helps to UPDATE table automatically -->
+		<property name="hbm2ddl.auto">update</property>
+
+		<!-- This property is used to see what query hibernate has fired -->
+		<property name="show_sql">true</property>
+
+		<!-- This property is used to format our hibernate sql query -->
+		<property name="format_sql">true</property>
+
+		<!-- Enable second-level cache -->
+		<property name="hibernate.cache.use_second_level_cache">true</property>
+		<!-- Specify the second-level cache provider -->
+		<property name="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.EhCacheRegionFactory</property>
+
+		<!-- This is used to map our class so that hibernate can unders tand that 
+			we have a class that should be treated as an entity -->
+		<mapping class="com.learninghibernate.Student" />
+		<mapping class="com.learninghibernate.Address" />
+
+		<mapping class="com.learninghibernate.mapping.Question" />
+		<mapping class="com.learninghibernate.mapping.Answer" />
+
+		<mapping class="com.learninghibernate.mapping.Emp" />
+		<mapping class="com.learninghibernate.mapping.Project" />
+	</session-factory>
+</hibernate-configuration>
+```
+
+### Mapping Using XML file
+
+**TestingMapping.java (Main class)**
+
+```java
+package com.learninghibernate.mappingusingxml;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
+
+public class TestingMapping {
+	
+	public static void main(String[] args) {
+		
+		SessionFactory sessionFactory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
+
+		Person person = new Person(12, "Ajay", "Mumbai","4628942034");
+		
+		Session session = sessionFactory.openSession();
+		
+		Transaction transaction = session.beginTransaction();
+		
+		session.save(person);
+		
+		transaction.commit();
+		session.close();
+		sessionFactory.close();
+	}
+}
+```
+
+**Person.java**
+
+```java
+package com.learninghibernate.mappingusingxml;
+
+public class Person {
+
+	private int id;
+	private String name;
+	private String address;
+	private String phone;
+
+	public Person() {
+		super();
+	}
+
+	public Person(int id, String name, String address, String phone) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.address = address;
+		this.phone = phone;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+}
+```
+
+**Person.hbm.xml**
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+	<class name="com.learninghibernate.mappingusingxml.Person" table="person">
+		<id name="id" column="person_id">
+			<generator class="native"></generator>
+		</id>
+		<property name="name" column="person_name" type="string" />
+		<property name="address" column="person_address"
+			type="string" />
+		<property name="phone" column="person_phone" type="string" />
+	</class>
+</hibernate-mapping>
+```
+
+**hibernate.cfg.xml**
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+	"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+	<session-factory>
+		<!-- We have to mention which Driver are we using here we are using MySql -->
+		<property name="connection.driver_class">com.mysql.cj.jdbc.Driver</property>
+
+		<!-- Mention your database url -->
+		<property name="connection.url">jdbc:mysql://localhost:3306/myHiber</property>
+
+		<!-- Provide your database username and password -->
+		<property name="connection.username">ocean</property>
+		<property name="connection.password">ocean@root</property>
+
+		<!-- dialect is a property which is specific for the database you are using 
+			here since I'm using MySql -->
+		<!-- If you are using older version of version of hibernate -->
+		<!-- <property name="dialect">org.hibernate.dialect.MySQLDialect</property> -->
+		<!-- But if your are using latest version of hibernate then you need to 
+			add MySQL8Dialect -->
+		<property name="dialect">org.hibernate.dialect.MySQL8Dialect</property>
+
+		<!-- This property of hibernate helps to UPDATE table automatically -->
+		<property name="hbm2ddl.auto">update</property>
+
+		<!-- This property is used to see what query hibernate has fired -->
+		<property name="show_sql">true</property>
+
+		<!-- This property is used to format our hibernate sql query -->
+		<property name="format_sql">true</property>
+
+		
+		<!-- This is used to map our class so that hibernate can unders tand that 
+			we have a class that should be treated as an entity -->
+		<mapping class="com.learninghibernate.Student" />
+		<mapping class="com.learninghibernate.Address" />
+
+		<mapping class="com.learninghibernate.mapping.Question" />
+		<mapping class="com.learninghibernate.mapping.Answer" />
+
+		<mapping class="com.learninghibernate.mapping.Emp" />
+		<mapping class="com.learninghibernate.mapping.Project" />
+		
+		<!-- xml mapping -->
+		<mapping resource="com/learninghibernate/mappingusingxml/Person.hbm.xml"/>
+	</session-factory>
+</hibernate-configuration>
+```
+
+### Hibernate Criteria API | Criteria Restrictions
+
+**CriteriaDemo.java**
+
+```java
+package com.learninghibernate.criteria;
+
+import java.util.List;
+
+import org.hibernate.Session;
+import org.hibernate.cfg.Configuration;
+
+import com.learninghibernate.Certificate;
+import com.learninghibernate.Student;
+
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+
+public class CriteriaDemo {
+
+	public static void main(String[] args) {
+
+		Session session = new Configuration().configure().buildSessionFactory().openSession();
+
+		// Using CriteriaBuilder with Restriction
+		CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+		CriteriaQuery<Student> criteriaQuery = criteriaBuilder.createQuery(Student.class);
+		Root<Student> root = criteriaQuery.from(Student.class);
+		criteriaQuery.select(root);
+
+		// Adding the join to navigate to the certificate attribute
+		Join<Student, Certificate> certificateJoin = root.join("certificate");
+
+		// Adding the restriction
+		Predicate coursePredicate = criteriaBuilder.equal(certificateJoin.get("course"), "C++");
+		criteriaQuery.where(coursePredicate);
+
+		List<Student> listOfStudents = session.createQuery(criteriaQuery).getResultList();
+
+		for (Student student : listOfStudents) {
+			System.out.println(student);
+		}
+
+		session.close();
 	}
 }
 ```
