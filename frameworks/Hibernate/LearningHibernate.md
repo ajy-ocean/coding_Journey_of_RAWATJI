@@ -2696,7 +2696,7 @@ public class SecondLevelCaching {
 ```
 
 ### Mapping Using XML file
-
+![XML Mapping](/frameworks/Hibernate/img/mappingusingxml.png)
 **TestingMapping.java (Main class)**
 
 ```java
