@@ -10,6 +10,7 @@
 * [HttpServlet](#httpservlet)
 * [LifeCycle Of Servlet](#life-cycle-of-servlet)
 * [How to fetch data of form using servlet](#how-to-fetch-data-of-form-using-servlet)
+* [Welcome File Tag](#welcome-file-tag)
 
 ### What is a Servlet ?
 - Servlet is just a simple java program that runs on server, not only capable of handling request but also generating dynamic response.
@@ -604,4 +605,63 @@ public class RegisterServlet extends HttpServlet {
 		<url-pattern>/RegisterServlet</url-pattern>
 	</servlet-mapping>
 </web-app>
+```
+
+### Welcome File Tag
+![Welcome File Tag](/java/servlet/img/welcomeFileList.png)
+
+### RequestDispatcher
+![What is RequestDispatcher](/java/servlet/img/requestDispatcher.png)
+
+### RequestDispatcher:- include() method
+
+**ExperimentWithServlet.java**
+
+```java
+package com.experimenting.servlets;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+public class ExperimentWithServlet extends HttpServlet {
+
+	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+		response.setContentType("text/html");
+
+		PrintWriter out = response.getWriter();
+		out.println("<h1>Welcome To Experiment Bitch!!!!!</h1>");
+
+		String userName = request.getParameter("user_name");
+		String userPassword = request.getParameter("user_password");
+		String userGender = request.getParameter("user_gender");
+		String userCourse = request.getParameter("user_course");
+		String termsAndConditon = request.getParameter("condition");
+
+		if (termsAndConditon != null) {
+			if (termsAndConditon.equals("checked")) {
+				out.println("<h1>Name:- " + userName + "</h1>");
+				out.println("<h1>Password:- " + userPassword + "</h1>");
+				out.println("<h1>Gender:- " + userGender + "</h1>");
+				out.println("<h1>Course:- " + userCourse + "</h1>");
+			} else {
+				out.println("<h1>Something Went Wrong!!!</h1>");
+			}
+		} else {
+			out.println("<h1>Please Accept Our Terms And Conditions To Move AHead</h1>");
+			// Here, I am including the output of index.html
+			// First get the object of RequestDispatcher
+			RequestDispatcher requestDispatcher = request.getRequestDispatcher("index.html");
+			
+			// including the output of index.html
+			requestDispatcher.include(request, response);
+		}
+	}
+}
 ```
